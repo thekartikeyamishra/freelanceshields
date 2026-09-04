@@ -1,0 +1,131 @@
+@import "tailwindcss";
+
+/* Tailwind v4 does NOT auto-load tailwind.config.ts. Plugins must be declared
+ * here with @plugin. Without this line the entire typography plugin is absent
+ * and every `prose` class on the site is a no-op — verified by compiling your
+ * exact setup: 0 `.prose` rules generated. Delete tailwind.config.ts; it has
+ * never been loaded. See HANDOVER.md section 1. */
+@plugin "@tailwindcss/typography";
+
+/* app/globals.css
+ *
+ * CHANGES
+ *
+ * 1. ADDED A GLOBAL prefers-reduced-motion RULE. The theme defines float,
+ *    pulse-slow and fadeInUp animations that were applied unconditionally
+ *    across the site — fade-in-up on nearly every section, pulse on the 404 and
+ *    loading screens, bounce on the install prompt. None of them respected a
+ *    reduced-motion preference, which is an accessibility failure for users
+ *    with vestibular disorders and a WCAG 2.3.3 problem.
+ *
+ * 2. ADDED A VISIBLE FOCUS DEFAULT. Several components used `outline-none`
+ *    without a replacement, so keyboard focus was invisible in places.
+ *
+ * 3. EXPANDED THE BRAND SCALE. Components referenced brand-200, brand-300,
+ *    brand-400, brand-700 and brand-800, none of which were defined — only 50,
+ *    100, 500, 600 and 900 existed. Those classes silently produced no colour.
+ *
+ * 4. FIXED THE PRINT STYLES. `.no-print` was defined but never used anywhere in
+ *    the codebase, and printing the invoice page printed the whole app chrome.
+ *    Now hides site header, footer, ads and controls, so Ctrl+P on the invoice
+ *    page produces the invoice.
+ */
+
+@theme {
+  /* --- Brand scale (sky) --- */
+  --color-brand-50: #f0f9ff;
+  --color-brand-100: #e0f2fe;
+  --color-brand-200: #bae6fd;
+  --color-brand-300: #7dd3fc;
+  --color-brand-400: #38bdf8;
+  --color-brand-500: #0ea5e9;
+  --color-brand-600: #0284c7;
+  --color-brand-700: #0369a1;
+  --color-brand-800: #075985;
+  --color-brand-900: #0c4a6e;
+
+  --color-accent-500: #8b5cf6;
+
+  /* --- Animations --- */
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-pulse-slow: pulse-slow 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  --animate-fade-in-up: fadeInUp 0.6s ease-out forwards;
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-20px); }
+  }
+
+  @keyframes pulse-slow {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+
+  @keyframes fadeInUp {
+    0% { opacity: 0; transform: translateY(20px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+}
+
+/* --- Utilities --- */
+@utility glass {
+  backdrop-filter: blur(16px);
+  background-color: rgb(255 255 255 / 0.7);
+  border-width: 1px;
+  border-color: rgb(255 255 255 / 0.2);
+}
+
+/* --- Accessibility floor --- */
+
+/* Anything that opts out of the default outline must supply its own indicator;
+   this is the backstop for anything that forgets. */
+:focus-visible {
+  outline: 2px solid var(--color-brand-600);
+  outline-offset: 2px;
+}
+
+/* Honour the OS-level reduced-motion setting. Without this, every fade-in-up,
+   float, pulse and bounce on the site runs regardless of preference. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+/* --- Print --- */
+@media print {
+  /* Site chrome, advertising and interactive controls do not belong on paper. */
+  header,
+  footer,
+  nav,
+  aside[aria-label="Advertisement"],
+  .no-print {
+    display: none !important;
+  }
+
+  body {
+    background: #fff;
+    color: #000;
+  }
+
+  /* Avoid splitting an invoice table row across a page break. */
+  tr,
+  li {
+    break-inside: avoid;
+  }
+
+  a[href^="http"]::after {
+    content: " (" attr(href) ")";
+    font-size: 0.75em;
+    color: #555;
+  }
+}

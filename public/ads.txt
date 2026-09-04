@@ -1,0 +1,21 @@
+# ads.txt for freelanceshield.me
+# Format specification: IAB Tech Lab Authorized Digital Sellers
+#
+# The publisher ID below was NOT invented. It was read from your own committed
+# source, components/ads/StrategicAdSlot.tsx, which contained:
+#     data-ad-client="ca-pub-4557897331416844"
+# Because it was hardcoded in your repository for this site, it is treated as
+# genuine per your instruction not to fabricate one.
+#
+# VERIFY BEFORE DEPLOYING: open AdSense > Account > Settings and confirm the
+# publisher ID matches exactly. An ads.txt naming the wrong publisher causes
+# Google to report unauthorised inventory and can suppress ad revenue.
+#
+# Deployment checks once live:
+#   1. https://freelanceshield.me/ads.txt returns HTTP 200 as text/plain
+#   2. https://www.freelanceshield.me/ads.txt resolves (redirect to apex is fine)
+#   3. robots.txt does not disallow /ads.txt
+#   4. Served from the root, not a subdirectory
+#   5. Plain text with no HTML wrapper
+
+google.com, pub-4557897331416844, DIRECT, f08c47fec0942fa0
