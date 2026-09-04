@@ -13,7 +13,16 @@ import { ShieldCheck } from "lucide-react";
 
 const YEAR = new Date().getFullYear();
 
-const COLUMNS: Array<{ heading: string; links: Array<{ href: string; label: string }> }> = [
+interface SiteFooterProps {
+  /** See SiteHeader. Hides the Guides column when there is no content. */
+  hasGuides: boolean;
+}
+
+const COLUMNS: Array<{
+  heading: string;
+  requiresGuides?: boolean;
+  links: Array<{ href: string; label: string }>;
+}> = [
   {
     heading: "Tools",
     links: [
@@ -23,6 +32,7 @@ const COLUMNS: Array<{ heading: string; links: Array<{ href: string; label: stri
   },
   {
     heading: "Guides",
+    requiresGuides: true,
     links: [
       { href: "/resources", label: "All guides" },
       { href: "/methodology", label: "How the scanner works" },
@@ -39,7 +49,7 @@ const COLUMNS: Array<{ heading: string; links: Array<{ href: string; label: stri
   },
 ];
 
-export default function SiteFooter() {
+export default function SiteFooter({ hasGuides }: SiteFooterProps) {
   return (
     <footer className="border-t border-slate-200 bg-white">
       <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
@@ -55,7 +65,7 @@ export default function SiteFooter() {
             </p>
           </div>
 
-          {COLUMNS.map((column) => (
+          {COLUMNS.filter((c) => !c.requiresGuides || hasGuides).map((column) => (
             <nav key={column.heading} aria-labelledby={`footer-${column.heading}`}>
               <h2
                 id={`footer-${column.heading}`}

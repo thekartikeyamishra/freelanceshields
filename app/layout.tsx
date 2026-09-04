@@ -37,6 +37,7 @@ import Script from "next/script";
 import SiteHeader from "@/components/layout/SiteHeader";
 import ConsentBanner from "@/components/consent/ConsentBanner";
 import ServiceWorkerRegistrar from "@/components/core/ServiceWorkerRegistrar";
+import { getIndexableResources } from "@/lib/utils/markdown";
 import SiteFooter from "@/components/layout/SiteFooter";
 import "./globals.css";
 
@@ -109,7 +110,7 @@ function organizationJsonLd() {
           name: "Kartikeya Mishra",
           sameAs: [
             "https://www.linkedin.com/in/thekartikeyamishra/",
-            "https://x.com/KartikeyahereX",
+            "https://x.com/kartikeyahere",
           ],
         },
         // Add "logo" here once a logo file exists at a stable URL on THIS
@@ -130,6 +131,11 @@ function safeJsonLd(value: unknown): string {
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  // Read once here rather than in each component. /resources returns 404 when
+  // there are no publishable guides, so the nav and footer must not link to it
+  // — otherwise every page on the site carries a broken link.
+  const hasGuides = getIndexableResources().length > 0;
+
   return (
     <html lang="en" className={`${inter.variable} scroll-smooth`} suppressHydrationWarning>
       <head>
@@ -158,18 +164,18 @@ gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personali
         {/* Keyboard users land here first and can jump past the nav. */}
         <a
           href="#main"
-          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded-lg focus:bg-brand-600 focus:px-4 focus:py-2 focus:font-semibold focus:text-white"
+          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-100 focus:rounded-lg focus:bg-brand-600 focus:px-4 focus:py-2 focus:font-semibold focus:text-white"
         >
           Skip to content
         </a>
 
-        <SiteHeader />
+        <SiteHeader hasGuides={hasGuides} />
 
-        <main id="main" className="flex-grow">
+        <main id="main" className="grow">
           {children}
         </main>
 
-        <SiteFooter />
+        <SiteFooter hasGuides={hasGuides} />
 
         {ADSENSE_CLIENT && <ConsentBanner />}
         <ServiceWorkerRegistrar />

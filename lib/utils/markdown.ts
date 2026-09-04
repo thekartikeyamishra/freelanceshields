@@ -312,3 +312,22 @@ export function getIndexableResources(): ResourcePost[] {
 export function getResourcesByCategory(category: ResourceCategory): ResourcePost[] {
   return getAllResources().filter((post) => post.category === category);
 }
+
+/**
+ * True when a guide with this slug exists and is publishable.
+ *
+ * Used to gate "related guides" links on the tool pages. Those pages link to
+ * specific slugs, and a link to an article that has not been written yet is a
+ * 404 — worse than no link at all. Cheap: reads the directory listing only.
+ */
+export function resourceExists(slug: string): boolean {
+  return getResourceSlugs().includes(slug);
+}
+
+/** Filters a list of related links down to the ones that actually resolve. */
+export function existingResourceLinks<T extends { href: string }>(links: T[]): T[] {
+  return links.filter((link) => {
+    if (!link.href.startsWith('/resources/')) return true; // non-guide links pass
+    return resourceExists(link.href.replace('/resources/', ''));
+  });
+}

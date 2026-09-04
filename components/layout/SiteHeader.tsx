@@ -21,13 +21,27 @@ import { ShieldCheck, Menu, X } from "lucide-react";
 const NAV = [
   { href: "/invoice-maker", label: "Invoice generator" },
   { href: "/contract-scanner", label: "Contract scanner" },
-  { href: "/resources", label: "Guides" },
+  { href: "/resources", label: "Guides", requiresGuides: true },
   { href: "/about", label: "About" },
 ];
 
-export default function SiteHeader() {
+interface SiteHeaderProps {
+  /**
+   * Whether any publishable guides exist. Passed down from the layout, which
+   * is a server component and can read the content directory.
+   *
+   * When there are none, /resources returns 404, so linking to it from the nav
+   * on every page would put a broken link on the entire site. Navigation should
+   * not advertise a section that does not exist yet.
+   */
+  hasGuides: boolean;
+}
+
+export default function SiteHeader({ hasGuides }: SiteHeaderProps) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+
+  const nav = NAV.filter((item) => !item.requiresGuides || hasGuides);
 
   // Close the mobile menu on navigation, otherwise it stays open over the new page.
   useEffect(() => {
@@ -60,7 +74,7 @@ export default function SiteHeader() {
 
         <nav aria-label="Main" className="hidden md:block">
           <ul className="flex items-center gap-1">
-            {NAV.map((item) => (
+            {nav.map((item) => (
               <li key={item.href}>
                 <Link
                   href={item.href}
@@ -97,7 +111,7 @@ export default function SiteHeader() {
           className="border-t border-slate-200 bg-white md:hidden"
         >
           <ul className="mx-auto max-w-6xl px-4 py-2 sm:px-6">
-            {NAV.map((item) => (
+            {nav.map((item) => (
               <li key={item.href}>
                 <Link
                   href={item.href}
