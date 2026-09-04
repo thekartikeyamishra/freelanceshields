@@ -22,6 +22,7 @@
 
 import type { Metadata } from "next";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import { ArrowRight } from "lucide-react";
 import { getAllResources, type ResourceCategory } from "@/lib/utils/markdown";
 
@@ -77,6 +78,12 @@ function formatDate(iso: string): string {
 
 export default function ResourcesPage() {
   const all = getAllResources().filter((post) => post.indexable);
+
+  // With no publishable guides, this page has nothing on it. Returning 404 is
+  // correct: an index page listing zero items that answers with HTTP 200 is a
+  // soft-404, which is exactly what Google's guidance says not to serve.
+  if (all.length === 0) notFound();
+
 
   return (
     <div className="bg-slate-50 pb-24">

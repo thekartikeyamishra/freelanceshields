@@ -156,22 +156,21 @@ function parseSources(raw: unknown, slug: string, problems: string[]): ResourceS
 /** Lists article slugs (without the .md extension). */
 export function getResourceSlugs(): string[] {
   if (!fs.existsSync(RESOURCES_DIR)) {
-    // A missing content directory must fail a PRODUCTION build: shipping an
-    // empty /resources page that returns HTTP 200 is worse than not shipping.
+    // No content directory. This is NOT a build failure.
     //
-    // In development it should not be fatal. You may not have created the
-    // directory yet, and crashing the dev server stops you working on every
-    // other route for a reason unrelated to them.
-    if (process.env.NODE_ENV === 'production') {
-      throw new Error(
-        `Content directory not found at ${RESOURCES_DIR}. ` +
-          'The resources index would otherwise build as an empty page returning HTTP 200.',
-      );
-    }
-
+    // An earlier version threw here, reasoning that shipping an empty
+    // /resources page returning HTTP 200 is worse than not shipping. The
+    // conclusion was right; the remedy was wrong. The fix for "no content" is
+    // for /resources to return 404, not for the entire site to fail to build —
+    // the tools do not depend on the guides existing.
+    //
+    // app/resources/page.tsx now calls notFound() when this returns empty, so
+    // the bad outcome is prevented at the route rather than at the build.
     console.warn(
-      `[content] No directory at ${RESOURCES_DIR}. Guides will be empty. ` +
-        'Create it and add markdown files; see content/_TEMPLATE.md.',
+      `[content] No directory at ${RESOURCES_DIR}. ` +
+        '/resources will return 404 and the sitemap will contain no guides. ' +
+        'If you expected articles here, they are not committed — Git does not ' +
+        'track empty directories. See content/_TEMPLATE.md.',
     );
     return [];
   }
