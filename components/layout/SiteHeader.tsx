@@ -21,27 +21,17 @@ import { ShieldCheck, Menu, X } from "lucide-react";
 const NAV = [
   { href: "/invoice-maker", label: "Invoice generator" },
   { href: "/contract-scanner", label: "Contract scanner" },
-  { href: "/resources", label: "Guides", requiresGuides: true },
+  { href: "/resources", label: "Guides" },
   { href: "/about", label: "About" },
 ];
 
-interface SiteHeaderProps {
-  /**
-   * Whether any publishable guides exist. Passed down from the layout, which
-   * is a server component and can read the content directory.
-   *
-   * When there are none, /resources returns 404, so linking to it from the nav
-   * on every page would put a broken link on the entire site. Navigation should
-   * not advertise a section that does not exist yet.
-   */
+export interface SiteHeaderProps {
   hasGuides: boolean;
 }
 
 export default function SiteHeader({ hasGuides }: SiteHeaderProps) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
-
-  const nav = NAV.filter((item) => !item.requiresGuides || hasGuides);
 
   // Close the mobile menu on navigation, otherwise it stays open over the new page.
   useEffect(() => {
@@ -61,6 +51,9 @@ export default function SiteHeader({ hasGuides }: SiteHeaderProps) {
   const isActive = (href: string) =>
     pathname === href || pathname.startsWith(`${href}/`);
 
+  // Only show the Guides link if there are actually guides parsed in the file system
+  const navItems = NAV.filter((item) => item.href !== "/resources" || hasGuides);
+
   return (
     <header className="sticky top-0 z-50 border-b border-slate-200 bg-white/90 backdrop-blur-lg">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
@@ -74,7 +67,7 @@ export default function SiteHeader({ hasGuides }: SiteHeaderProps) {
 
         <nav aria-label="Main" className="hidden md:block">
           <ul className="flex items-center gap-1">
-            {nav.map((item) => (
+            {navItems.map((item) => (
               <li key={item.href}>
                 <Link
                   href={item.href}
@@ -111,7 +104,7 @@ export default function SiteHeader({ hasGuides }: SiteHeaderProps) {
           className="border-t border-slate-200 bg-white md:hidden"
         >
           <ul className="mx-auto max-w-6xl px-4 py-2 sm:px-6">
-            {nav.map((item) => (
+            {navItems.map((item) => (
               <li key={item.href}>
                 <Link
                   href={item.href}

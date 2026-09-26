@@ -13,16 +13,7 @@ import { ShieldCheck } from "lucide-react";
 
 const YEAR = new Date().getFullYear();
 
-interface SiteFooterProps {
-  /** See SiteHeader. Hides the Guides column when there is no content. */
-  hasGuides: boolean;
-}
-
-const COLUMNS: Array<{
-  heading: string;
-  requiresGuides?: boolean;
-  links: Array<{ href: string; label: string }>;
-}> = [
+const COLUMNS: Array<{ heading: string; links: Array<{ href: string; label: string }> }> = [
   {
     heading: "Tools",
     links: [
@@ -32,7 +23,6 @@ const COLUMNS: Array<{
   },
   {
     heading: "Guides",
-    requiresGuides: true,
     links: [
       { href: "/resources", label: "All guides" },
       { href: "/methodology", label: "How the scanner works" },
@@ -49,7 +39,19 @@ const COLUMNS: Array<{
   },
 ];
 
+export interface SiteFooterProps {
+  hasGuides: boolean;
+}
+
 export default function SiteFooter({ hasGuides }: SiteFooterProps) {
+  // Filter out the "/resources" link if there are no guides available in the file system
+  const displayColumns = COLUMNS.map((column) => ({
+    ...column,
+    links: column.links.filter((link) =>
+      link.href === "/resources" ? hasGuides : true
+    ),
+  }));
+
   return (
     <footer className="border-t border-slate-200 bg-white">
       <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
@@ -65,7 +67,7 @@ export default function SiteFooter({ hasGuides }: SiteFooterProps) {
             </p>
           </div>
 
-          {COLUMNS.filter((c) => !c.requiresGuides || hasGuides).map((column) => (
+          {displayColumns.map((column) => (
             <nav key={column.heading} aria-labelledby={`footer-${column.heading}`}>
               <h2
                 id={`footer-${column.heading}`}

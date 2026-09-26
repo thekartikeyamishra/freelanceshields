@@ -1,17 +1,15 @@
 #!/usr/bin/env node
+
 /* scripts/audit-content.mjs
  *
  * NEW FILE. Run this before you touch a single article:
- *
  *     node scripts/audit-content.mjs
  *     node scripts/audit-content.mjs --csv > content-audit.csv
  *
  * WHY THIS EXISTS
- *
  * You have roughly 110 articles and the biggest open question is which ones to
  * keep. Deciding that by reading all of them is a week of work. This does the
  * mechanical half in a second:
- *
  *   1. Reports every article missing the frontmatter the new loader requires
  *      (jurisdiction, sources, applicable year). That is your rewrite list.
  *   2. Reports body word count. Thin pages are the ones a reviewer flags.
@@ -22,12 +20,10 @@
  *      that reads as scaled content.
  *
  * KNOWN LIMITATION OF THE CLUSTERING
- *
  * Clustering works on slug tokens, so it catches groups that share vocabulary
  * (the six how-to-write-freelance-<profession>-invoice pages) but MISSES groups
  * that say the same thing in different words. On your site the local-first
  * cluster is exactly that case:
- *
  *     local-first-vs-cloud-software-freelance
  *     why-open-source-invoicing-is-better
  *     zero-knowledge-architecture-legal-docs
@@ -37,14 +33,12 @@
  *     why-freelancers-leaving-quickbooks
  *     best-tools-for-anonymous-freelance-billing
  *     free-invoice-generator-no-watermark
- *
  * Those share almost no tokens and will not be grouped, but they are arguing
  * the same point. Treat the clustering output as a starting point that catches
  * the obvious cases cheaply, not as a complete map. Reading the titles in the
  * --csv output is still worth an hour.
  *
  * It changes nothing. It only reads and reports.
- *
  * The judgement — which page in a cluster survives, what merges into it, what
  * gets a 301 — is yours. This just puts the facts on one screen.
  */
@@ -80,7 +74,6 @@ const STOPWORDS = new Set([
 /* ------------------------------------------------------------------ */
 /* Minimal frontmatter parser. Avoids needing gray-matter for a script. */
 /* ------------------------------------------------------------------ */
-
 function parseFrontmatter(raw) {
   const match = /^---\r?\n([\s\S]*?)\r?\n---\r?\n?([\s\S]*)$/.exec(raw);
   if (!match) return { data: {}, body: raw, hasFrontmatter: false };
@@ -108,7 +101,7 @@ function parseFrontmatter(raw) {
       data[currentKey] = [];
     } else if (value.startsWith("[")) {
       data[currentKey] = value
-        .replace(/^\[|\]$/g, "")
+        .replace(/^\[\vert{}\]$/g, "")
         .split(",")
         .map((v) => v.trim().replace(/^["']|["']$/g, ""))
         .filter(Boolean);
@@ -119,7 +112,6 @@ function parseFrontmatter(raw) {
 
   return { data, body: match[2], hasFrontmatter: true };
 }
-
 /* ------------------------------------------------------------------ */
 
 function analyse(slug, raw) {
@@ -144,16 +136,17 @@ function analyse(slug, raw) {
     : data.jurisdictions
       ? [data.jurisdictions]
       : [];
+
   if (jurisdictions.length === 0) problems.push("missing jurisdictions");
 
   const sourceCount = Array.isArray(data.sources) ? data.sources.length : 0;
-
   if (HIGH_STAKES.includes(category)) {
     if (sourceCount === 0) problems.push(`no sources (required for "${category}")`);
     if (jurisdictions.includes("GLOBAL")) {
       problems.push(`category "${category}" cannot be GLOBAL`);
     }
   }
+
   if (category === "tax" && !data.applicableAsOf) {
     problems.push("missing applicableAsOf (required for tax)");
   }
@@ -246,7 +239,6 @@ function main() {
   console.log(`\n${"=".repeat(64)}`);
   console.log(`  CONTENT AUDIT — ${records.length} articles`);
   console.log("=".repeat(64));
-
   console.log(`\n  Passing all checks:        ${clean.length}`);
   console.log(`  Needing work:              ${broken.length}`);
   console.log(`  Thin (<${THIN_WORDS} words):        ${thin.length}`);
@@ -279,7 +271,6 @@ function main() {
     console.log("  Articles sharing two or more slug tokens. These probably");
     console.log("  compete for the same queries. Pick one to keep per cluster,");
     console.log("  merge the useful parts in, and 301 the rest to it.\n");
-
     for (const group of clusters.slice(0, 15)) {
       console.log(`    [${group.length} pages]`);
       for (const slug of group) {
@@ -289,7 +280,7 @@ function main() {
       console.log("");
     }
     if (clusters.length > 15) {
-      console.log(`    …and ${clusters.length - 15} more clusters.\n`);
+      console.log(`    ... and ${clusters.length - 15} more clusters.\n`);
     }
   }
 
@@ -299,10 +290,9 @@ function main() {
     console.log("  ARTICLES NEEDING WORK");
     console.log("-".repeat(64));
     console.log("  These will fail the build until fixed.\n");
-
     for (const r of broken) {
       console.log(`    /resources/${r.slug}`);
-      for (const problem of r.problems) console.log(`        · ${problem}`);
+      for (const problem of r.problems) console.log(`          ${problem}`);
       console.log("");
     }
   }

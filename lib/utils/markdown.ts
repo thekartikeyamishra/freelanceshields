@@ -103,7 +103,6 @@ const VALID_CATEGORIES: ResourceCategory[] = [
 
 /**
  * Accepts either a string or a Date.
- *
  * This matters: gray-matter runs the YAML through js-yaml, which parses an
  * unquoted date literal (`published: 2026-05-02`) into a JavaScript Date
  * object, not a string. An earlier version of this function required a string
@@ -139,10 +138,12 @@ function parseSources(raw: unknown, slug: string, problems: string[]): ResourceS
     const missing = ['publisher', 'title', 'url'].filter(
       (k) => typeof e[k] !== 'string' || !(e[k] as string).trim(),
     );
+
     if (missing.length > 0) {
       problems.push(`sources[${i}] is missing: ${missing.join(', ')}`);
       return [];
     }
+
     return [
       {
         publisher: String(e.publisher),
@@ -156,25 +157,11 @@ function parseSources(raw: unknown, slug: string, problems: string[]): ResourceS
 /** Lists article slugs (without the .md extension). */
 export function getResourceSlugs(): string[] {
   if (!fs.existsSync(RESOURCES_DIR)) {
-    // No content directory. This is NOT a build failure.
-    //
-    // An earlier version threw here, reasoning that shipping an empty
-    // /resources page returning HTTP 200 is worse than not shipping. The
-    // conclusion was right; the remedy was wrong. The fix for "no content" is
-    // for /resources to return 404, not for the entire site to fail to build —
-    // the tools do not depend on the guides existing.
-    //
-    // app/resources/page.tsx now calls notFound() when this returns empty, so
-    // the bad outcome is prevented at the route rather than at the build.
-    console.warn(
-      `[content] No directory at ${RESOURCES_DIR}. ` +
-        '/resources will return 404 and the sitemap will contain no guides. ' +
-        'If you expected articles here, they are not committed — Git does not ' +
-        'track empty directories. See content/_TEMPLATE.md.',
+    throw new Error(
+      `Content directory not found at ${RESOURCES_DIR}. ` +
+        'The resources index would otherwise build as an empty page returning HTTP 200.',
     );
-    return [];
   }
-
   return fs
     .readdirSync(RESOURCES_DIR)
     .filter((file) => file.endsWith('.md'))
@@ -219,6 +206,7 @@ export function getResourceBySlug(slug: string): ResourcePost {
   const jurisdictions = Array.isArray(data.jurisdictions)
     ? data.jurisdictions.map(String)
     : [];
+
   if (jurisdictions.length === 0) {
     problems.push("`jurisdictions` is required (use ['GLOBAL'] if genuinely universal)");
   }
@@ -235,6 +223,7 @@ export function getResourceBySlug(slug: string): ResourcePost {
   // noindexed and shipped rather than blocking the build for every other fix in
   // the repository. Flip `indexable` back to true as each page is sourced, and
   // these checks re-engage at that moment.
+
   const category = data.category as ResourceCategory;
   const searchFacing = data.indexable !== false;
 
@@ -251,6 +240,7 @@ export function getResourceBySlug(slug: string): ResourcePost {
       );
     }
   }
+
   if (
     category === 'tax' &&
     searchFacing &&
@@ -266,6 +256,7 @@ export function getResourceBySlug(slug: string): ResourcePost {
   }
 
   const published = toIso(data.published ?? data.date);
+
   // An article that has never been revised has updated === published.
   // We do NOT default this to "now".
   const updated = isValidDate(data.updated) ? toIso(data.updated) : published;
@@ -311,23 +302,4 @@ export function getIndexableResources(): ResourcePost[] {
 /** Articles in one topic cluster, for hub pages and related links. */
 export function getResourcesByCategory(category: ResourceCategory): ResourcePost[] {
   return getAllResources().filter((post) => post.category === category);
-}
-
-/**
- * True when a guide with this slug exists and is publishable.
- *
- * Used to gate "related guides" links on the tool pages. Those pages link to
- * specific slugs, and a link to an article that has not been written yet is a
- * 404 — worse than no link at all. Cheap: reads the directory listing only.
- */
-export function resourceExists(slug: string): boolean {
-  return getResourceSlugs().includes(slug);
-}
-
-/** Filters a list of related links down to the ones that actually resolve. */
-export function existingResourceLinks<T extends { href: string }>(links: T[]): T[] {
-  return links.filter((link) => {
-    if (!link.href.startsWith('/resources/')) return true; // non-guide links pass
-    return resourceExists(link.href.replace('/resources/', ''));
-  });
 }

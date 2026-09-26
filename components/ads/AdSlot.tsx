@@ -37,7 +37,7 @@ import React, { useEffect, useRef, useState } from "react";
 
 declare global {
   interface Window {
-    adsbygoogle?: unknown[];
+    adsbygoogle?: Array<Record<string, unknown>>;
   }
 }
 

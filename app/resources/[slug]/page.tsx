@@ -162,7 +162,7 @@ export default async function ResourcePostPage({ params }: Props) {
       jobTitle: "Software engineer",
       sameAs: [
         "https://www.linkedin.com/in/thekartikeyamishra/",
-        "https://x.com/KartikeyahereX",
+        "https://x.com/kartikeyahere",
       ],
     },
     publisher: {

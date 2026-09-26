@@ -131,7 +131,7 @@ self.addEventListener("fetch", (event) => {
           if (offline) return offline;
 
           return new Response(
-            "<!doctype html><meta charset=utf-8><title>Offline</title><p>You are offline and this page is not available.",
+            "<!doctype html><meta charset=utf-8><title>Offline</title><p>You are offline and this page is not available.</p>",
             { status: 503, headers: { "Content-Type": "text/html; charset=utf-8" } },
           );
         }

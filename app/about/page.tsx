@@ -100,7 +100,7 @@ export default function AboutPage() {
               LinkedIn <ExternalLink size={13} aria-hidden="true" />
             </a>
             <a
-              href="https://x.com/KartikeyahereX"
+              href="https://x.com/kartikeyahere"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:border-brand-300 hover:bg-slate-50"

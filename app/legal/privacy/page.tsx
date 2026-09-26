@@ -53,12 +53,12 @@ import PrivacyDataControls from "@/components/core/PrivacyDataControls";
 const SITE = "https://freelanceshield.me";
 
 /* -------------------------------------------------------------------------- */
-/* PLACEHOLDERS — replace before deploying                                    */
+/* CONFIGURATION                                                              */
 /* -------------------------------------------------------------------------- */
-const OPERATOR_LEGAL_NAME = "REPLACE_WITH_LEGAL_ENTITY_OR_YOUR_FULL_NAME";
-const OPERATOR_ADDRESS = "REPLACE_WITH_CONTACTABLE_POSTAL_ADDRESS";
+const OPERATOR_LEGAL_NAME = "Kartikeya Mishra";
+const OPERATOR_ADDRESS = "Prayagraj, Uttar Pradesh, India";
 const PRIVACY_EMAIL = "workmailkartikeya@gmail.com";
-const LAST_UPDATED = "3 September 2026";
+const LAST_UPDATED = "26 September 2026";
 
 export const metadata: Metadata = {
   title: "Privacy Policy | FreelanceShield",
