@@ -87,6 +87,6 @@ export const INTEGRATIONS = {
   edgeAddons: null as string | null,
   googleWorkspace: null as string | null,
   customGpt: null as string | null,
-  geminiExtensionRepo: null as string | null,
+  geminiExtensionRepo:"https://github.com/thekartikeyamishra/freelanceshield-gemini" as string | null,
   mcpUrl: "https://freelanceshield.me/api/mcp",
 } as const;
