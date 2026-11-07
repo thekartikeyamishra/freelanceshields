@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>FreelanceShield</title><link rel="stylesheet" href="styles.css"></head>
+<body class="popup">
+  <header><img src="icons/icon-32.png" alt=""><h1>FreelanceShield contract check</h1></header>
+  <label for="text" class="muted">Paste contract text, or grab it from this page:</label>
+  <textarea id="text" placeholder="The Contractor agrees to indemnify and hold harmless…"></textarea>
+  <div class="btns">
+    <button id="grab" type="button">Use text from this page</button>
+    <button id="scan" type="button" class="primary">Check</button>
+    <button id="full" type="button" hidden>Open full report</button>
+  </div>
+  <p id="err" class="err" role="alert"></p>
+  <div id="out" aria-live="polite"></div>
+  <div class="links">
+    <a href="https://freelanceshield.me/dashboard?source=extension" target="_blank" rel="noopener">Who owes me</a>
+    <a href="https://freelanceshield.me/invoice-maker?source=extension" target="_blank" rel="noopener">New invoice</a>
+  </div>
+  <script src="engine.js"></script>
+  <script src="render.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>

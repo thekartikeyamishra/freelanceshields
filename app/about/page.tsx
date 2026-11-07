@@ -35,6 +35,7 @@
 
 import type { Metadata } from "next";
 import Link from "next/link";
+import { CONTACT } from "@/lib/site";
 // Note: deliberately not importing brand icons (Linkedin/Twitter) from
 // lucide-react. Those exports were removed in later versions, so importing
 // them couples this page to a specific lucide release and breaks the build
@@ -49,6 +50,7 @@ export const metadata: Metadata = {
     "Who builds FreelanceShield, how the tools actually work, what they do and do not do with your data, and where the guides come from.",
   alternates: { canonical: `${SITE}/about` },
   openGraph: {
+    images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "FreelanceShield — free, private tools for freelancers" }],
     type: "profile",
     url: `${SITE}/about`,
     title: "About FreelanceShield",
@@ -76,7 +78,7 @@ export default function AboutPage() {
             Who runs this
           </h2>
           <p className="mt-4 max-w-[68ch] leading-relaxed text-slate-600">
-            I am Kartikeya Mishra, a software engineer in Prayagraj, India. I built
+            I am Kartikeya Mishra, a software engineer in {CONTACT.city}, India. I built
             these tools because I invoice international clients myself and kept
             running into the same problems: generators that watermark the PDF unless
             you pay, tools that want an account before they will let you download
@@ -126,7 +128,7 @@ export default function AboutPage() {
 
           <div className="mt-6 space-y-6">
             <div className="flex gap-4">
-              <FileText size={20} aria-hidden="true" className="mt-1 shrink-0 text-brand-600" />
+              <FileText size={20} aria-hidden="true" className="mt-1 shrink-0 text-brand-700" />
               <div>
                 <h3 className="font-bold text-slate-900">The invoice generator</h3>
                 <p className="mt-1 max-w-[64ch] text-sm leading-relaxed text-slate-600">
@@ -139,7 +141,7 @@ export default function AboutPage() {
             </div>
 
             <div className="flex gap-4">
-              <Cpu size={20} aria-hidden="true" className="mt-1 shrink-0 text-brand-600" />
+              <Cpu size={20} aria-hidden="true" className="mt-1 shrink-0 text-brand-700" />
               <div>
                 <h3 className="font-bold text-slate-900">The contract scanner</h3>
                 <p className="mt-1 max-w-[64ch] text-sm leading-relaxed text-slate-600">
@@ -160,7 +162,7 @@ export default function AboutPage() {
             </div>
 
             <div className="flex gap-4">
-              <Lock size={20} aria-hidden="true" className="mt-1 shrink-0 text-brand-600" />
+              <Lock size={20} aria-hidden="true" className="mt-1 shrink-0 text-brand-700" />
               <div>
                 <h3 className="font-bold text-slate-900">Where your data goes</h3>
                 <p className="mt-1 max-w-[64ch] text-sm leading-relaxed text-slate-600">
@@ -243,7 +245,7 @@ export default function AboutPage() {
         <div className="mt-14 border-t border-slate-100 pt-8">
           <Link
             href="/invoice-maker"
-            className="inline-flex items-center gap-2 rounded-full bg-brand-600 px-7 py-3.5 font-bold text-white transition-colors hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2"
+            className="inline-flex items-center gap-2 rounded-full bg-brand-700 px-7 py-3.5 font-bold text-white transition-colors hover:bg-brand-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2"
           >
             Make an invoice
           </Link>

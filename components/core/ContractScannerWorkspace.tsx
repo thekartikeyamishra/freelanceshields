@@ -29,7 +29,7 @@
 //    directly before the results panel, so pressing Analyze scrolled a user
 //    straight into an ad on the way to their answer.
 
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   FileText,
   Loader2,
@@ -45,6 +45,7 @@ import {
   type Severity,
 } from "@/lib/ai/contractScanner";
 import HeuristicNotice from "@/components/ui/HeuristicNotice";
+import { mascotSay } from "@/lib/mascot";
 
 const MIN_CHARS = 200;
 
@@ -61,8 +62,8 @@ export default function ContractScannerWorkspace() {
   const [validationError, setValidationError] = useState<string | null>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
 
-  const handleScan = async () => {
-    const trimmed = text.trim();
+  const handleScan = async (override?: string) => {
+    const trimmed = (override ?? text).trim();
     if (trimmed.length < MIN_CHARS) {
       setValidationError(
         `Paste at least ${MIN_CHARS} characters. You have ${trimmed.length}. A short excerpt cannot tell you much either way.`,
@@ -77,6 +78,10 @@ export default function ContractScannerWorkspace() {
     try {
       const analysis = await analyzeContract(trimmed);
       setResult(analysis);
+      mascotSay(
+        analysis.counts.high > 0 ? "worried" : analysis.missingProtections.length > 0 ? "thinking" : "happy",
+        analysis.counts.high > 0 ? "A few clauses are worth reading closely." : "Check done. Results are below.",
+      );
       // Move focus to the results so keyboard and screen-reader users are taken
       // to the answer rather than left on the button.
       window.requestAnimationFrame(() => resultsRef.current?.focus());
@@ -88,6 +93,23 @@ export default function ContractScannerWorkspace() {
       setScanning(false);
     }
   };
+
+  // Text shared from another app (installed-app share target) or handed over by
+  // the browser extension arrives as ?text=. The service worker strips the
+  // query before any network request, so the text never reaches the server.
+  // We read it once, drop it from the address bar, and scan locally.
+  useEffect(() => {
+    // The extension hands text over in the #fragment, which browsers never send
+    // to a server. The share target has to use the query (see public/sw.js).
+    const hash = window.location.hash.startsWith("#text=") ? window.location.hash.slice(1) : "";
+    const params = new URLSearchParams(hash || window.location.search);
+    const shared = [params.get("title"), params.get("text"), params.get("url")].filter(Boolean).join("\n").trim();
+    if (!shared) return;
+    window.history.replaceState(null, "", window.location.pathname);
+    setText(shared);
+    void handleScan(shared);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleClear = () => {
     setText("");
@@ -124,7 +146,7 @@ export default function ContractScannerWorkspace() {
             }}
             disabled={scanning}
           />
-          <p className="mt-2 text-right text-xs text-slate-400">
+          <p className="mt-2 text-right text-xs text-slate-500">
             {text.trim().length.toLocaleString()} characters
           </p>
         </div>
@@ -152,9 +174,9 @@ export default function ContractScannerWorkspace() {
             )}
             <button
               type="button"
-              onClick={handleScan}
+              onClick={() => void handleScan()}
               disabled={scanning || text.trim().length === 0}
-              className="inline-flex items-center justify-center gap-2 rounded-xl bg-brand-600 px-8 py-3 font-bold text-white shadow-lg shadow-brand-600/20 transition-colors hover:bg-brand-700 disabled:opacity-60 disabled:shadow-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2"
+              className="inline-flex items-center justify-center gap-2 rounded-xl bg-brand-700 px-8 py-3 font-bold text-white shadow-lg shadow-brand-600/20 transition-colors hover:bg-brand-800 disabled:opacity-60 disabled:shadow-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2"
             >
               {scanning && (
                 <Loader2

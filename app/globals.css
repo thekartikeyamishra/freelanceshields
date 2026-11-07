@@ -67,6 +67,21 @@
   }
 }
 
+/* --- Mascot motion (disabled by the reduced-motion rule below) --- */
+@keyframes shieldy-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+@keyframes shieldy-spin {
+  0% { transform: rotate(0); }
+  100% { transform: rotate(360deg); }
+}
+@keyframes shieldy-hop {
+  0% { transform: translateY(0) rotate(0); }
+  40% { transform: translateY(-10px) rotate(-6deg); }
+  100% { transform: translateY(0) rotate(0); }
+}
+
 /* --- Utilities --- */
 @utility glass {
   backdrop-filter: blur(16px);

@@ -21,14 +21,17 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: "/",
+        // NEVER disallow /_next/: Googlebot needs those JS and CSS files to
+        // render the tools. Blocking them makes pages look empty to Google.
         disallow: [
+          // Machine endpoints. (/dashboard is noindexed via metadata instead: a
+          // robots block would stop Google from seeing that noindex.)
           "/api/",
-          // Next.js internals. No crawl value, and they waste crawl budget.
-          "/_next/static/chunks/",
           // Query-string states of the tools. The canonical tool URL is the
           // one that should be indexed; parameterised variants are duplicates.
           "/invoice-maker?",
           "/contract-scanner?",
+          "/project-planner?",
         ],
       },
     ],

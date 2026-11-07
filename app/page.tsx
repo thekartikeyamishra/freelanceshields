@@ -27,8 +27,12 @@
 
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, FileText, ShieldAlert, BookOpen } from "lucide-react";
+import { ArrowRight, FileText, ShieldAlert, BookOpen, ClipboardList, Wallet } from "lucide-react";
 import { getIndexableResources } from "@/lib/utils/markdown";
+import Spotlight from "@/components/ui/Spotlight";
+import TiltCard from "@/components/ui/TiltCard";
+import Reveal from "@/components/ui/Reveal";
+import AppStoreButtons from "@/components/ui/AppStoreButtons";
 
 const SITE = "https://freelanceshield.me";
 
@@ -45,9 +49,17 @@ export const metadata: Metadata = {
 
 const TOOLS = [
   {
+    href: "/dashboard",
+    icon: Wallet,
+    iconClass: "text-emerald-600",
+    title: "Get-paid dashboard",
+    body: "Every invoice you download is tracked until it is paid. Overdue ones rise to the top with a polite reminder ready to send by email or WhatsApp.",
+    cta: "See who owes you",
+  },
+  {
     href: "/invoice-maker",
     icon: FileText,
-    iconClass: "text-brand-600",
+    iconClass: "text-brand-700",
     title: "Invoice generator",
     body: "Thirteen currencies, tax registration numbers, discounts and cross-border reverse charge. Exports a real text PDF, not a screenshot, so it survives corporate accounts-payable systems.",
     cta: "Make an invoice",
@@ -59,6 +71,14 @@ const TOOLS = [
     title: "Contract scanner",
     body: "Paste an agreement and see which of twelve clause types it contains, what each one generally does, and which freelancer protections are missing. Pattern matching, not a language model.",
     cta: "Check a contract",
+  },
+  {
+    href: "/project-planner",
+    icon: ClipboardList,
+    iconClass: "text-violet-600",
+    title: "Project planner",
+    body: "Agree scope, paid milestones and fair terms before work starts. A check flags the gaps that lead to unpaid work, and you export a fingerprinted PDF both sides can sign.",
+    cta: "Plan a project",
   },
   {
     href: "/resources",
@@ -80,7 +100,8 @@ export default function HomePage() {
   return (
     <>
       {/* Hero */}
-      <section className="relative overflow-hidden bg-slate-50 px-4 pb-24 pt-20 sm:px-6">
+      <Spotlight>
+      <section className="relative overflow-hidden px-4 pb-24 pt-20 sm:px-6">
         <div
           aria-hidden="true"
           className="pointer-events-none absolute inset-0 mx-auto max-w-7xl opacity-40"
@@ -95,19 +116,22 @@ export default function HomePage() {
           </p>
 
           <h1 className="mt-8 text-4xl font-black leading-[1.1] tracking-tight text-slate-900 sm:text-5xl lg:text-6xl">
-            Invoicing and contract tools that keep your data on your device
+            Get paid. Stay protected.{" "}
+            <span className="bg-gradient-to-r from-brand-600 via-brand-500 to-emerald-500 bg-clip-text text-transparent">
+              Keep your data.
+            </span>
           </h1>
 
           <p className="mx-auto mt-6 max-w-[60ch] text-lg leading-relaxed text-slate-600">
-            Make a professional invoice PDF, or check an agreement for the clauses
-            worth reading twice. Both run entirely in your browser. Nothing you type
-            is uploaded.
+            Free tools for freelancers to invoice clients, check contracts and plan paid
+            milestones. Everything runs in your browser and nothing you type is
+            uploaded. No account, no watermark.
           </p>
 
           <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
             <Link
               href="/invoice-maker"
-              className="flex w-full items-center justify-center gap-2 rounded-xl bg-brand-600 px-8 py-4 font-bold text-white shadow-xl shadow-brand-600/20 transition-colors hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 sm:w-auto"
+              className="flex w-full items-center justify-center gap-2 rounded-xl bg-brand-700 px-8 py-4 font-bold text-white shadow-xl shadow-brand-600/20 transition-colors hover:bg-brand-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 sm:w-auto"
             >
               Make an invoice
               <ArrowRight size={18} aria-hidden="true" />
@@ -122,6 +146,7 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+      </Spotlight>
 
       {/* Tools.
           No ad sits between the hero and this grid any more. The previous
@@ -135,12 +160,13 @@ export default function HomePage() {
             What&apos;s here
           </h2>
 
-          <div className={`mt-12 grid gap-8 ${tools.length === 3 ? "md:grid-cols-3" : "md:grid-cols-2"}`}>
+          <div className={`mt-12 grid gap-8 ${tools.length % 2 === 0 ? "md:grid-cols-2 xl:grid-cols-4" : "md:grid-cols-2 xl:grid-cols-3"}`}>
             {tools.map((tool) => {
               const Icon = tool.icon;
               return (
+                <TiltCard key={tool.href}>
                 <Link
-                  key={tool.href}
+
                   href={tool.href}
                   className="group flex flex-col rounded-3xl border border-slate-100 bg-slate-50 p-8 transition-[transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 motion-reduce:transition-none motion-reduce:hover:translate-y-0"
                 >
@@ -160,6 +186,7 @@ export default function HomePage() {
                     />
                   </span>
                 </Link>
+                </TiltCard>
               );
             })}
           </div>
@@ -169,6 +196,7 @@ export default function HomePage() {
       {/* What this is */}
       <section className="bg-slate-900 px-4 py-24 text-white sm:px-6">
         <div className="mx-auto max-w-3xl">
+          <Reveal>
           <h2 className="text-3xl font-extrabold tracking-tight">
             What you should know before you use it
           </h2>
@@ -219,7 +247,23 @@ export default function HomePage() {
               <ArrowRight size={16} aria-hidden="true" />
             </Link>
           </div>
+          </Reveal>
         </div>
+      </section>
+
+      {/* Apps — badges stay "Coming soon" until real store URLs are set in lib/site.ts */}
+      <section className="bg-white px-4 py-20 sm:px-6">
+        <Reveal className="mx-auto flex max-w-5xl flex-col items-center gap-6 text-center">
+          <h2 className="text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl">Wherever you already work</h2>
+          <p className="max-w-[60ch] text-slate-600">
+            Install it as an app on your phone or laptop. Check contracts from Chrome or Google Docs. Make invoices
+            and payment reminders inside ChatGPT, Claude or Gemini.
+          </p>
+          <Link href="/apps" className="inline-flex items-center gap-2 rounded-xl bg-brand-700 px-6 py-3 font-bold text-white hover:bg-brand-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2">
+            Get the apps <ArrowRight size={16} aria-hidden="true" />
+          </Link>
+          <AppStoreButtons className="justify-center" />
+        </Reveal>
       </section>
     </>
   );

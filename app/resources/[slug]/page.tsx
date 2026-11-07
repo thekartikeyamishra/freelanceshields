@@ -53,12 +53,10 @@ import {
   getResourceSlugs,
   type ResourcePost,
 } from "@/lib/utils/markdown";
-import AdSlot from "@/components/ads/AdSlot";
+import AdPlacement from "@/components/ads/AdPlacement";
 
 const SITE = "https://freelanceshield.me";
 
-/** Ad unit for the end of an article. Replace with your real slot id. */
-const ARTICLE_AD_SLOT = "9179557454";
 
 /** Articles shorter than this carry no advertising at all. */
 const MIN_WORDS_FOR_AD = 700;
@@ -92,6 +90,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     // kept live for people who have the link while being kept out of search.
     robots: post.indexable ? { index: true, follow: true } : { index: false, follow: true },
     openGraph: {
+    images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "FreelanceShield — free, private tools for freelancers" }],
       type: "article",
       url: `${SITE}/resources/${post.slug}`,
       title: post.title,
@@ -101,6 +100,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       authors: [post.author],
     },
     twitter: {
+      images: ["/opengraph-image"],
       card: "summary_large_image",
       title: post.title,
       description: post.description,
@@ -333,7 +333,7 @@ export default async function ResourcePostPage({ params }: Props) {
         )}
 
         {/* One ad, after the article, only on substantial pages. */}
-        {showAd && <AdSlot slotId={ARTICLE_AD_SLOT} reservedHeight={280} />}
+        {showAd && <AdPlacement name="articleEnd" className="px-0" />}
 
         <div className="mt-12 border-t border-slate-200 pt-8">
           <p className="text-sm text-slate-600">

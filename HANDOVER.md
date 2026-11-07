@@ -1,3 +1,53 @@
+# Batch 8 — from a website to a habit: app, extension, AI assistants
+
+**What changed:** the product's centre is now the **Get-paid dashboard** (`/dashboard`, the installed app's home screen). Every downloaded invoice is tracked until it's paid. Overdue ones show up under "Chase today" with a pre-written reminder (email, WhatsApp or copy), plus a calendar reminder, a one-tap duplicate for next month, backup/restore and CSV. Everything is on device.
+
+**New surfaces, one engine:**
+- Installable app: `start_url /dashboard`, share target (share text into the scanner; the service worker strips the query so it never reaches the server), icon badge for overdue count, shortcuts.
+- MCP server `/api/mcp` for ChatGPT apps, Claude connectors and Gemini. REST `/api/v1/*`, `/openapi.json` for Custom GPTs and `/llms.txt`. Six deterministic tools, rate-limited, nothing stored.
+- `integrations/`: Chrome/Edge extension, Google Docs add-on, Gemini extension, ChatGPT GPT setup, Claude connector and skill, Play Store (TWA) guide.
+- `/apps` page listing them all. Store links are in `lib/site.ts` → `INTEGRATIONS` (null shows "coming soon").
+- AI-prepared invoices open via `/invoice-maker#invoice=…` (the fragment never reaches a server).
+
+**Your steps:** `npm install`, `npm run build:integrations`, deploy. Then publish in this order: Custom GPT (free, 10 min) → Chrome extension ($5) → Claude/ChatGPT connector → Docs add-on → Play Store. See `integrations/README.md` and `docs/GROWTH_AND_RETENTION.md`.
+
+**Nothing to delete this batch.** Privacy policy updated (sections 6c, 6d).
+
+---
+
+# Batch 7 — AI assistant removed, production build verified
+
+- **Removed:** `/api/assist` and all AI provider code. Shieldy stays as a guide built only on pre-written answers. It makes no network calls and costs nothing to run.
+- **Fixed after a real `next build` + `next start`:** Google Fonts build failure (Inter is now self-hosted), the edge-runtime warning, `robots.txt` blocking `/_next/` (which hid the JS from Google), missing `og:image` on 5 pages, the draft flash on reload, homepage CLS 0.32 → 0 (deleted `app/loading.tsx`), white-on-blue contrast, the missing favicon, and missing PWA icons (`public/icons/*` generated).
+- **Verified:** 21/21 static routes with zero warnings, e2e 20/20, Lighthouse mobile at Accessibility, Best Practices and SEO 100 on the tools.
+
+**Delete these from your repo:** `app/loading.tsx`, `app/api/`, `lib/assist/guard.ts`, `lib/assist/provider.ts`, `docs/AI_AND_COSTS.md`, `vercel.json`. Remove any `ASSIST_*` env vars in Vercel.
+
+---
+
+# Batch 6 — AI fallback that can't lose money, tracked walkthroughs, fixes
+
+- Shieldy: 20 expressions, walkthroughs that tick off real progress on the invoice and planner, a playful reaction to repeated clicks, and "talk to a human".
+- `/api/assist`: optional AI layer, OFF by default. Reviewed answers first; then rate limit, daily token budget, timeout and a backup provider. It never returns an error to the user. 34 stress assertions pass.
+- Fixed: location inconsistency (confirm `CONTACT.city`), sitemap static `lastModified`, unbounded service-worker cache.
+- Docs: licence audit, international table, founder→company IP assignment template, TEST_REPORT.md, investor data room.
+
+---
+
+# Batch 5 — ProjectSafe planner + Shieldy guide
+
+New: `/project-planner` (scope, milestones, terms, gap check, locked fingerprinted
+versions, agreement PDF), `components/mascot/Shieldy.tsx` (12 moods, cursor-tracking
+eyes, EN/HI, reviewed answers, resume-unfinished-work nudge, zero API cost),
+and four docs under `docs/`. Wired into nav, footer, homepage, sitemap and
+privacy controls. Typecheck clean; 22 new assertions pass.
+
+Read `docs/PROJECTSAFE_SCOPE.md` for what was deliberately not built (escrow,
+accounts, e-sign) and why. Read `docs/BUSINESS_LEGAL_SUMMARY.md` §1 first —
+the employer IP clause is the top ownership risk.
+
+---
+
 # FreelanceShield — code handover (batch 4, supersedes 1–3)
 
 48 files. Typecheck clean under `strict: true`. Logic tested: **24 assertions,

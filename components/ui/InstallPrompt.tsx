@@ -155,7 +155,7 @@ export default function InstallPrompt() {
     >
       <div className="rounded-xl border border-slate-700 bg-slate-900 p-4 text-white shadow-2xl">
         <div className="flex items-start gap-3">
-          <span className="mt-0.5 rounded-lg bg-brand-600 p-2">
+          <span className="mt-0.5 rounded-lg bg-brand-700 p-2">
             <Download size={18} aria-hidden="true" />
           </span>
 

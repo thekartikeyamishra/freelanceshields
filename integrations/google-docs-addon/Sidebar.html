@@ -1,0 +1,45 @@
+<!doctype html>
+<html>
+<head>
+  <base target="_top">
+  <?!= include('Styles'); ?>
+</head>
+<body>
+  <main style="padding:12px">
+    <header><h1>Contract check</h1></header>
+    <p class="muted">Reads this document (or your selection) and checks it here in the sidebar. Nothing is uploaded or stored.</p>
+    <div class="btns"><button id="run" class="primary" type="button">Check this document</button></div>
+    <p id="err" class="err" role="alert"></p>
+    <div id="out" aria-live="polite"></div>
+    <div class="links">
+      <a href="https://freelanceshield.me/project-planner?source=gdocs" target="_blank" rel="noopener">Plan paid milestones</a>
+      <a href="https://freelanceshield.me/dashboard?source=gdocs" target="_blank" rel="noopener">Who owes me</a>
+    </div>
+  </main>
+  <?!= include('Engine'); ?>
+  <?!= include('Render'); ?>
+  <script>
+    var btn = document.getElementById("run");
+    btn.addEventListener("click", function () {
+      btn.disabled = true;
+      document.getElementById("err").textContent = "";
+      google.script.run
+        .withSuccessHandler(function (res) {
+          btn.disabled = false;
+          if (!res.text || res.text.trim().length < 200) {
+            document.getElementById("err").textContent = "There is not enough text here to check (200 characters minimum).";
+            return;
+          }
+          FSEngine.analyzeContract(res.text).then(function (r) {
+            renderResult(document.getElementById("out"), r);
+          });
+        })
+        .withFailureHandler(function () {
+          btn.disabled = false;
+          document.getElementById("err").textContent = "Could not read the document. Reload it and try again.";
+        })
+        .getContractText();
+    });
+  </script>
+</body>
+</html>

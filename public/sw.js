@@ -25,7 +25,7 @@
  *   - Any cross-origin request.
  */
 
-const VERSION = "v1";
+const VERSION = "v3";
 const SHELL_CACHE = `fs-shell-${VERSION}`;
 const RUNTIME_CACHE = `fs-runtime-${VERSION}`;
 
@@ -33,7 +33,17 @@ const OFFLINE_URL = "/offline";
 
 /* Routes precached so the tools open with no connection. Keep this list short:
    every entry is downloaded on first visit. */
-const PRECACHE_URLS = [OFFLINE_URL, "/invoice-maker", "/contract-scanner"];
+const PRECACHE_URLS = [OFFLINE_URL, "/dashboard", "/invoice-maker", "/contract-scanner", "/project-planner"];
+
+/* Upper bound on runtime-cached entries. Hashed build files accumulate across
+   deploys; without a cap the cache grows until the browser evicts the origin. */
+const RUNTIME_MAX_ENTRIES = 80;
+
+async function trimCache(name, max) {
+  const cache = await caches.open(name);
+  const keys = await cache.keys();
+  for (let i = 0; i < keys.length - max; i += 1) await cache.delete(keys[i]);
+}
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
@@ -103,7 +113,8 @@ self.addEventListener("fetch", (event) => {
         const response = await fetch(request);
         if (response.ok) {
           const cache = await caches.open(RUNTIME_CACHE);
-          cache.put(request, response.clone());
+          await cache.put(request, response.clone());
+          event.waitUntil(trimCache(RUNTIME_CACHE, RUNTIME_MAX_ENTRIES));
         }
         return response;
       })(),
@@ -114,24 +125,32 @@ self.addEventListener("fetch", (event) => {
   // 2. Page navigations: network-first so content is never stale, with a cache
   //    fallback and finally the offline page.
   if (request.mode === "navigate") {
+    // PRIVACY: text shared into the installed app arrives as a query string
+    // (?text=…). Strip every query from navigations to the tool pages before
+    // touching the network, so shared contract text never reaches the server
+    // or its logs. The page reads the original URL itself.
+    const TOOL_PAGES = ["/contract-scanner", "/invoice-maker", "/project-planner", "/dashboard"];
+    const stripped = TOOL_PAGES.includes(url.pathname) && url.search;
+    const target = stripped ? new Request(url.origin + url.pathname, { credentials: "same-origin" }) : request;
+
     event.respondWith(
       (async () => {
         try {
-          const response = await fetch(request);
+          const response = await fetch(target);
           if (response.ok) {
             const cache = await caches.open(RUNTIME_CACHE);
-            cache.put(request, response.clone());
+            cache.put(target, response.clone());
           }
           return response;
         } catch {
-          const cached = await caches.match(request);
+          const cached = await caches.match(target, { ignoreSearch: Boolean(stripped) });
           if (cached) return cached;
 
           const offline = await caches.match(OFFLINE_URL);
           if (offline) return offline;
 
           return new Response(
-            "<!doctype html><meta charset=utf-8><title>Offline</title><p>You are offline and this page is not available.</p>",
+            "<!doctype html><meta charset=utf-8><title>Offline</title><p>You are offline and this page is not available.",
             { status: 503, headers: { "Content-Type": "text/html; charset=utf-8" } },
           );
         }

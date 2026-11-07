@@ -1,0 +1,12 @@
+{
+  "name": "freelanceshield",
+  "version": "1.0.0",
+  "description": "Invoice maths, ready-to-download invoices, payment reminders, contract clause checks and project-plan gap checks for freelancers.",
+  "contextFileName": "GEMINI.md",
+  "mcpServers": {
+    "freelanceshield": {
+      "httpUrl": "https://freelanceshield.me/api/mcp",
+      "timeout": 15000
+    }
+  }
+}

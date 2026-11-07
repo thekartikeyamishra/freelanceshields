@@ -10,7 +10,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import ContractScannerWorkspace from "@/components/core/ContractScannerWorkspace";
+import AdPlacement from "@/components/ads/AdPlacement";
 import FAQSection, { type FAQ } from "@/components/ui/FAQSection";
+import { existingResourceLinks } from "@/lib/utils/markdown";
 
 const SITE = "https://freelanceshield.me";
 
@@ -20,6 +22,7 @@ export const metadata: Metadata = {
     "Paste a freelance contract or NDA and see which of twelve clause types it contains, what each one does, and which freelancer protections are missing. Runs in your browser.",
   alternates: { canonical: `${SITE}/contract-scanner` },
   openGraph: {
+    images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "FreelanceShield — free, private tools for freelancers" }],
     type: "website",
     url: `${SITE}/contract-scanner`,
     title: "Contract Scanner for freelancers",
@@ -56,7 +59,21 @@ const faqs: FAQ[] = [
   },
 ];
 
+/**
+ * Candidate related links. Filtered at build time against what actually exists,
+ * because a "related guide" link to an unwritten article is a 404 — worse for
+ * the reader than showing nothing, and a broken internal link for crawlers.
+ */
+const RELATED = [
+  { href: "/resources/what-is-mutual-indemnity-freelance", label: "How mutual indemnity clauses work" },
+  { href: "/resources/what-is-work-made-for-hire", label: "What \u201cwork made for hire\u201d means for your ownership" },
+  { href: "/resources/how-to-push-back-on-non-compete", label: "Negotiating a non-compete as a contractor" },
+  { href: "/invoice-maker", label: "Make an invoice once the contract is signed" },
+];
+
 export default function ContractScannerPage() {
+  const relatedLinks = existingResourceLinks(RELATED);
+
   return (
     <div className="bg-slate-50 pb-24">
       <nav aria-label="Breadcrumb" className="border-b border-slate-200 bg-white px-6 py-3">
@@ -152,34 +169,34 @@ export default function ContractScannerPage() {
           </p>
         </section>
 
+        {/* One ad, after the supporting content, far from the tool controls. */}
+        <AdPlacement name="toolFooter" />
+
         <FAQSection
           title="Questions about the scanner"
           faqs={faqs}
           withStructuredData={false}
         />
 
-        <section className="mx-auto max-w-3xl px-6 pb-16">
-          <h2 className="text-2xl font-extrabold tracking-tight text-slate-900">
-            Related guides
-          </h2>
-          <ul className="mt-6 space-y-3 text-sm">
-            {[
-              { href: "/resources/what-is-mutual-indemnity-freelance", label: "How mutual indemnity clauses work" },
-              { href: "/resources/what-is-work-made-for-hire", label: "What “work made for hire” means for your ownership" },
-              { href: "/resources/how-to-push-back-on-non-compete", label: "Negotiating a non-compete as a contractor" },
-              { href: "/invoice-maker", label: "Make an invoice once the contract is signed" },
-            ].map((link) => (
-              <li key={link.href}>
-                <Link
-                  href={link.href}
-                  className="font-medium text-brand-700 underline decoration-brand-300 underline-offset-2 hover:text-brand-800"
-                >
-                  {link.label}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </section>
+        {relatedLinks.length > 0 && (
+          <section className="mx-auto max-w-3xl px-6 pb-16">
+            <h2 className="text-2xl font-extrabold tracking-tight text-slate-900">
+              Related guides
+            </h2>
+            <ul className="mt-6 space-y-3 text-sm">
+              {relatedLinks.map((link) => (
+                <li key={link.href}>
+                  <Link
+                    href={link.href}
+                    className="font-medium text-brand-700 underline decoration-brand-300 underline-offset-2 hover:text-brand-800"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
       </div>
     </div>
   );

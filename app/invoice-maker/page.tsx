@@ -22,8 +22,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import InvoiceWorkspace from "@/components/core/InvoiceWorkspace";
+import AdPlacement from "@/components/ads/AdPlacement";
 import FAQSection from "@/components/ui/FAQSection";
 import type { FAQ } from "@/components/ui/FAQSection";
+import { existingResourceLinks, resourceExists } from "@/lib/utils/markdown";
 
 const SITE = "https://freelanceshield.me";
 
@@ -33,6 +35,7 @@ export const metadata: Metadata = {
     "Make a professional invoice PDF in your browser. Multi-currency, tax and reverse-charge support, no sign-up, no watermark. Your data stays on your device.",
   alternates: { canonical: `${SITE}/invoice-maker` },
   openGraph: {
+    images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "FreelanceShield — free, private tools for freelancers" }],
     type: "website",
     url: `${SITE}/invoice-maker`,
     title: "Free Invoice Generator for Freelancers",
@@ -41,6 +44,7 @@ export const metadata: Metadata = {
     siteName: "FreelanceShield",
   },
   twitter: {
+      images: ["/opengraph-image"],
     card: "summary_large_image",
     title: "Free Invoice Generator for Freelancers",
     description: "Make a professional invoice PDF in your browser. No sign-up.",
@@ -103,7 +107,17 @@ function safeJsonLd(value: unknown): string {
     .replace(/&/g, "\\u0026");
 }
 
+/** Filtered at build time — see the note in app/contract-scanner/page.tsx. */
+const RELATED = [
+  { href: "/resources/how-to-write-freelance-invoice", label: "How to write a freelance invoice that gets paid on time" },
+  { href: "/resources/how-to-invoice-eu-client-without-vat", label: "Invoicing EU clients and the reverse-charge mechanism" },
+  { href: "/resources/how-to-charge-late-fees-on-freelance-invoices", label: "Charging late fees on an overdue invoice" },
+  { href: "/contract-scanner", label: "Check a contract for clauses worth reading twice" },
+];
+
 export default function InvoiceMakerPage() {
+  const relatedLinks = existingResourceLinks(RELATED);
+
   return (
     <>
       <script
@@ -173,14 +187,19 @@ export default function InvoiceMakerPage() {
               <dd className="mt-1 max-w-[68ch] text-sm leading-relaxed text-slate-600">
                 A date, not &quot;Net 30&quot; alone. It removes the argument about
                 when the clock started, which is what makes chasing a late invoice
-                straightforward.{" "}
-                <Link
-                  href="/resources/net-30-vs-net-60-freelance-payment-terms"
-                  className="font-medium text-brand-700 underline decoration-brand-300 underline-offset-2 hover:text-brand-800"
-                >
-                  Comparing payment terms
-                </Link>{" "}
-                covers how to negotiate this before the work starts.
+                straightforward.
+                {resourceExists("net-30-vs-net-60-freelance-payment-terms") && (
+                  <>
+                    {" "}
+                    <Link
+                      href="/resources/net-30-vs-net-60-freelance-payment-terms"
+                      className="font-medium text-brand-700 underline decoration-brand-300 underline-offset-2 hover:text-brand-800"
+                    >
+                      Comparing payment terms
+                    </Link>{" "}
+                    covers how to negotiate this before the work starts.
+                  </>
+                )}
               </dd>
             </div>
             <div>
@@ -241,51 +260,34 @@ export default function InvoiceMakerPage() {
           </p>
         </section>
 
+        {/* One ad, after the supporting content, far from the tool controls. */}
+        <AdPlacement name="toolFooter" />
+
         <FAQSection
           title="Questions about this invoice generator"
           faqs={faqs}
           withStructuredData={false}
         />
 
-        <section className="mx-auto max-w-3xl px-6 py-14">
-          <h2 className="text-2xl font-extrabold tracking-tight text-slate-900">
-            Related guides
-          </h2>
-          <ul className="mt-6 space-y-3 text-sm">
-            <li>
-              <Link
-                href="/resources/how-to-write-freelance-invoice"
-                className="font-medium text-brand-700 underline decoration-brand-300 underline-offset-2 hover:text-brand-800"
-              >
-                How to write a freelance invoice that gets paid on time
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/resources/how-to-invoice-eu-client-without-vat"
-                className="font-medium text-brand-700 underline decoration-brand-300 underline-offset-2 hover:text-brand-800"
-              >
-                Invoicing EU clients and the reverse-charge mechanism
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/resources/how-to-charge-late-fees-on-freelance-invoices"
-                className="font-medium text-brand-700 underline decoration-brand-300 underline-offset-2 hover:text-brand-800"
-              >
-                Charging late fees on an overdue invoice
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/contract-scanner"
-                className="font-medium text-brand-700 underline decoration-brand-300 underline-offset-2 hover:text-brand-800"
-              >
-                Check a contract for clauses worth reading twice
-              </Link>
-            </li>
-          </ul>
-        </section>
+        {relatedLinks.length > 0 && (
+          <section className="mx-auto max-w-3xl px-6 py-14">
+            <h2 className="text-2xl font-extrabold tracking-tight text-slate-900">
+              Related guides
+            </h2>
+            <ul className="mt-6 space-y-3 text-sm">
+              {relatedLinks.map((link) => (
+                <li key={link.href}>
+                  <Link
+                    href={link.href}
+                    className="font-medium text-brand-700 underline decoration-brand-300 underline-offset-2 hover:text-brand-800"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
       </div>
     </>
   );

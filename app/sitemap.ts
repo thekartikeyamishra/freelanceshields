@@ -25,28 +25,40 @@ const STATIC_ROUTES: Array<{
   path: string;
   changeFrequency: MetadataRoute.Sitemap[number]["changeFrequency"];
   priority: number;
+  /** Only include when at least one publishable guide exists. */
+  requiresGuides?: boolean;
 }> = [
   { path: "/", changeFrequency: "weekly", priority: 1.0 },
   { path: "/invoice-maker", changeFrequency: "monthly", priority: 0.9 },
   { path: "/contract-scanner", changeFrequency: "monthly", priority: 0.9 },
-  { path: "/resources", changeFrequency: "weekly", priority: 0.7 },
+  { path: "/project-planner", changeFrequency: "monthly", priority: 0.9 },
+  { path: "/resources", changeFrequency: "weekly", priority: 0.7, requiresGuides: true },
+  { path: "/apps", changeFrequency: "monthly", priority: 0.7 },
   { path: "/about", changeFrequency: "yearly", priority: 0.5 },
   { path: "/methodology", changeFrequency: "yearly", priority: 0.4 },
   { path: "/legal/privacy", changeFrequency: "yearly", priority: 0.3 },
   { path: "/legal/terms", changeFrequency: "yearly", priority: 0.3 },
+  { path: "/legal/refunds", changeFrequency: "yearly", priority: 0.3 },
+  { path: "/contact", changeFrequency: "yearly", priority: 0.4 },
 ];
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const now = new Date();
+  const articles = getIndexableResources();
 
-  const staticEntries: MetadataRoute.Sitemap = STATIC_ROUTES.map((route) => ({
+  // /resources calls notFound() when there are no publishable guides, so
+  // listing it unconditionally would put a URL that returns 404 into the
+  // sitemap. A sitemap must contain only URLs that actually resolve — feeding
+  // Google known-404s wastes crawl budget and is reported as an error in
+  // Search Console.
+  const staticEntries: MetadataRoute.Sitemap = STATIC_ROUTES.filter(
+    (route) => !route.requiresGuides || articles.length > 0,
+  ).map((route) => ({
     url: `${SITE}${route.path}`,
-    lastModified: now,
     changeFrequency: route.changeFrequency,
     priority: route.priority,
   }));
 
-  const articleEntries: MetadataRoute.Sitemap = getIndexableResources().map((post) => ({
+  const articleEntries: MetadataRoute.Sitemap = articles.map((post) => ({
     url: `${SITE}/resources/${post.slug}`,
     lastModified: new Date(post.updated),
     changeFrequency: "yearly",

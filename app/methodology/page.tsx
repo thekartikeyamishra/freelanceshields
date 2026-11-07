@@ -237,7 +237,7 @@ export default function MethodologyPage() {
         <div className="mt-14 border-t border-slate-100 pt-8">
           <Link
             href="/contract-scanner"
-            className="inline-flex items-center gap-2 rounded-full bg-brand-600 px-7 py-3.5 font-bold text-white transition-colors hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2"
+            className="inline-flex items-center gap-2 rounded-full bg-brand-700 px-7 py-3.5 font-bold text-white transition-colors hover:bg-brand-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2"
           >
             Try the scanner
           </Link>

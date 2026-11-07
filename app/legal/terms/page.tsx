@@ -23,6 +23,7 @@
 
 import type { Metadata } from "next";
 import Link from "next/link";
+import { CONTACT } from "@/lib/site";
 import { ArrowLeft } from "lucide-react";
 
 const SITE = "https://freelanceshield.me";
@@ -143,6 +144,19 @@ export default function TermsPage() {
           </p>
         </Section>
 
+        <Section heading="3a. Paid products and payments">
+          <p>
+            All tools are currently free. If paid products are offered later, the price, currency, taxes and what you receive
+            will be shown before you pay. Payments are processed by Razorpay or PayPal under their own terms; we never receive
+            your card, UPI or bank details. Refunds, cancellations and delivery are governed by the{" "}
+            <Link href="/legal/refunds" className="font-medium text-brand-700 underline decoration-brand-300 underline-offset-2">
+              refund policy
+            </Link>
+            . A paid plan never changes the free tools you already use, and never buys a different outcome from the
+            contract scanner or project checks.
+          </p>
+        </Section>
+
         <Section heading="4. Acceptable use">
           <p>You agree not to:</p>
           <ul className="list-disc space-y-1.5 pl-5">
@@ -157,7 +171,8 @@ export default function TermsPage() {
               scrape the guides for republication, or reproduce them at scale without
               permission;
             </li>
-            <li>use the site for any unlawful purpose.</li>
+            <li>use the site for any unlawful purpose, including money laundering, fraud or impersonation;</li>
+            <li>misuse a payment method, file a chargeback in bad faith, or attempt to obtain a refund by deception.</li>
           </ul>
         </Section>
 
@@ -223,7 +238,7 @@ export default function TermsPage() {
         <Section heading="10. Governing law">
           <p>
             These terms are governed by the laws of India, and disputes are subject to
-            the courts of Prayagraj, Uttar Pradesh, India. If you are a consumer
+            the courts of {CONTACT.city}, India. If you are a consumer
             resident elsewhere, this does not deprive you of the protection of
             mandatory consumer-protection rules in your own country.
           </p>

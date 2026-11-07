@@ -1,0 +1,51 @@
+// render.js — renders a ScanResult with textContent only (never innerHTML),
+// because the excerpts are text copied from arbitrary web pages.
+
+const ATTN = {
+  high: { label: "Read closely", cls: "chip high" },
+  medium: { label: "Worth checking", cls: "chip medium" },
+  low: { label: "Standard", cls: "chip low" },
+};
+
+function el(tag, cls, text) {
+  const n = document.createElement(tag);
+  if (cls) n.className = cls;
+  if (text !== undefined) n.textContent = text;
+  return n;
+}
+
+// eslint-disable-next-line no-unused-vars
+function renderResult(root, result, { compact = false } = {}) {
+  root.replaceChildren();
+  if (result.inconclusive) {
+    root.append(el("p", "note warn", `Only ${result.wordCount} words — too short to say much. Select the whole agreement for a useful check.`));
+  }
+  const c = result.counts;
+  root.append(el("p", "summary", `${result.detected.length} clause type${result.detected.length === 1 ? "" : "s"} found · ${c.high} to read closely · ${result.missingProtections.length} protection${result.missingProtections.length === 1 ? "" : "s"} not found`));
+
+  if (result.detected.length) {
+    root.append(el("h2", "", "Clauses found"));
+    for (const d of result.detected) {
+      const card = el("div", "card");
+      const head = el("div", "row");
+      head.append(el("strong", "", d.label), el("span", ATTN[d.attention].cls, ATTN[d.attention].label));
+      card.append(head, el("p", "muted", d.whatItMeans));
+      if (!compact) {
+        const ul = el("ul");
+        d.whatToCheck.forEach((w) => ul.append(el("li", "", w)));
+        card.append(ul);
+        d.excerpts.forEach((x) => card.append(el("blockquote", "", x)));
+      }
+      root.append(card);
+    }
+  }
+  if (result.missingProtections.length) {
+    root.append(el("h2", "", "Protections not found"));
+    for (const m of result.missingProtections) {
+      const card = el("div", "card missing");
+      card.append(el("strong", "", m.label), el("p", "muted", m.whyItMatters));
+      root.append(card);
+    }
+  }
+  root.append(el("p", "fine", "Pattern matching, not legal advice. A flagged clause is not necessarily unfair, and nothing flagged does not mean the contract is safe."));
+}

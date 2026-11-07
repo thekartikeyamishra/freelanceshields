@@ -9,20 +9,34 @@
 // would actually follow, plus an honest one-line statement of who runs this.
 
 import Link from "next/link";
+import { CONTACT } from "@/lib/site";
 import { ShieldCheck } from "lucide-react";
 
 const YEAR = new Date().getFullYear();
 
-const COLUMNS: Array<{ heading: string; links: Array<{ href: string; label: string }> }> = [
+interface SiteFooterProps {
+  /** See SiteHeader. Hides the Guides column when there is no content. */
+  hasGuides: boolean;
+}
+
+const COLUMNS: Array<{
+  heading: string;
+  requiresGuides?: boolean;
+  links: Array<{ href: string; label: string }>;
+}> = [
   {
     heading: "Tools",
     links: [
       { href: "/invoice-maker", label: "Invoice generator" },
       { href: "/contract-scanner", label: "Contract scanner" },
+      { href: "/project-planner", label: "Project planner" },
+      { href: "/dashboard", label: "Payment dashboard" },
+      { href: "/apps", label: "Apps & extensions" },
     ],
   },
   {
     heading: "Guides",
+    requiresGuides: true,
     links: [
       { href: "/resources", label: "All guides" },
       { href: "/methodology", label: "How the scanner works" },
@@ -34,31 +48,20 @@ const COLUMNS: Array<{ heading: string; links: Array<{ href: string; label: stri
       { href: "/about", label: "About this project" },
       { href: "/legal/privacy", label: "Privacy policy" },
       { href: "/legal/terms", label: "Terms of service" },
-      { href: "mailto:workmailkartikeya@gmail.com", label: "Contact" },
+      { href: "/legal/refunds", label: "Refund policy" },
+      { href: "/contact", label: "Contact" },
     ],
   },
 ];
 
-export interface SiteFooterProps {
-  hasGuides: boolean;
-}
-
 export default function SiteFooter({ hasGuides }: SiteFooterProps) {
-  // Filter out the "/resources" link if there are no guides available in the file system
-  const displayColumns = COLUMNS.map((column) => ({
-    ...column,
-    links: column.links.filter((link) =>
-      link.href === "/resources" ? hasGuides : true
-    ),
-  }));
-
   return (
     <footer className="border-t border-slate-200 bg-white">
       <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
           <div>
             <p className="flex items-center gap-2 font-bold tracking-tight text-slate-900">
-              <ShieldCheck size={18} aria-hidden="true" className="text-brand-600" />
+              <ShieldCheck size={18} aria-hidden="true" className="text-brand-700" />
               FreelanceShield
             </p>
             <p className="mt-3 max-w-[42ch] text-sm leading-relaxed text-slate-600">
@@ -67,7 +70,7 @@ export default function SiteFooter({ hasGuides }: SiteFooterProps) {
             </p>
           </div>
 
-          {displayColumns.map((column) => (
+          {COLUMNS.filter((c) => !c.requiresGuides || hasGuides).map((column) => (
             <nav key={column.heading} aria-labelledby={`footer-${column.heading}`}>
               <h2
                 id={`footer-${column.heading}`}
@@ -102,7 +105,7 @@ export default function SiteFooter({ hasGuides }: SiteFooterProps) {
 
         <div className="mt-10 border-t border-slate-100 pt-6 text-xs leading-relaxed text-slate-500">
           <p>
-            Built and maintained by Kartikeya Mishra in Prayagraj, India. The guides
+            Built and maintained by Kartikeya Mishra in {CONTACT.city}, India. The guides
             here are general information, not legal, tax or accounting advice.
           </p>
           <p className="mt-2">© {YEAR} Kartikeya Mishra.</p>

@@ -30,7 +30,10 @@ export default function manifest(): MetadataRoute.Manifest {
     short_name: "FreelanceShield",
     description:
       "Make invoices and check contracts in your browser. Your data stays on your device.",
-    start_url: "/",
+    id: "/dashboard",
+    // The installed app opens on the dashboard: "who owes me money today" is
+    // the reason to come back, so it is the first thing the app shows.
+    start_url: "/dashboard?source=pwa",
     scope: "/",
     display: "standalone",
     background_color: "#f8fafc",
@@ -38,7 +41,22 @@ export default function manifest(): MetadataRoute.Manifest {
     orientation: "portrait-primary",
     categories: ["business", "finance", "productivity", "utilities"],
 
+    // Share text from any app (email, WhatsApp, a PDF reader) into the scanner.
+    // GET is safe here only because public/sw.js strips the query before any
+    // network request; the shared text never reaches the server.
+    share_target: {
+      action: "/contract-scanner",
+      method: "GET",
+      params: { title: "title", text: "text", url: "url" },
+    },
+
     shortcuts: [
+      {
+        name: "Who owes me",
+        short_name: "Dashboard",
+        description: "See unpaid and overdue invoices",
+        url: "/dashboard",
+      },
       {
         name: "New invoice",
         short_name: "Invoice",
@@ -55,9 +73,9 @@ export default function manifest(): MetadataRoute.Manifest {
 
     icons: [
       { src: "/icons/icon-192x192.png", sizes: "192x192", type: "image/png", purpose: "any" },
-      { src: "/icons/icon-192x192.png", sizes: "192x192", type: "image/png", purpose: "maskable" },
+      { src: "/icons/icon-192x192-maskable.png", sizes: "192x192", type: "image/png", purpose: "maskable" },
       { src: "/icons/icon-512x512.png", sizes: "512x512", type: "image/png", purpose: "any" },
-      { src: "/icons/icon-512x512.png", sizes: "512x512", type: "image/png", purpose: "maskable" },
+      { src: "/icons/icon-512x512-maskable.png", sizes: "512x512", type: "image/png", purpose: "maskable" },
     ],
 
     // Re-enable once these files are confirmed to exist in /public:

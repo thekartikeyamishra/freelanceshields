@@ -59,7 +59,7 @@ export default function Error({
           <button
             type="button"
             onClick={reset}
-            className="flex w-full items-center justify-center gap-2 rounded-xl bg-brand-600 px-6 py-3.5 font-bold text-white transition-colors hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2"
+            className="flex w-full items-center justify-center gap-2 rounded-xl bg-brand-700 px-6 py-3.5 font-bold text-white transition-colors hover:bg-brand-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2"
           >
             <RefreshCcw size={18} aria-hidden="true" />
             Try again

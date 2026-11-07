@@ -463,7 +463,7 @@ export default function InvoiceForm({
               checked={data.reverseCharge}
               onChange={(e) => setField("reverseCharge", e.target.checked)}
               aria-describedby="reverse-charge-hint"
-              className="mt-0.5 h-4 w-4 cursor-pointer rounded border-slate-300 text-brand-600 focus-visible:ring-2 focus-visible:ring-brand-500"
+              className="mt-0.5 h-4 w-4 cursor-pointer rounded border-slate-300 text-brand-700 focus-visible:ring-2 focus-visible:ring-brand-500"
             />
             <div>
               <label

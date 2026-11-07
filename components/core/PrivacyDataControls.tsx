@@ -16,8 +16,14 @@ import { clearNamespace, listStoredKeys } from "@/lib/hooks/useLocalStorage";
 /** Maps internal storage keys to something a person can recognise. */
 const FRIENDLY: Record<string, string> = {
   "invoice-draft-v2": "Your saved invoice draft",
+  "ledger-v1": "Your invoice tracker (who has paid and who has not)",
   "pwa-prompt-dismissed": "A note that you dismissed the install prompt",
   "pwa-engaged": "A note that you have used a tool before",
+  "project-plan-v1": "Your project plan",
+  "project-versions-v1": "Locked versions of your project plan",
+  "mascot-hidden": "A note that you hid the guide",
+  "mascot-lang": "The guide's language setting",
+  "consent-v1": "Your advertising cookie choice",
 };
 
 function describe(key: string): string {

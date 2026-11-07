@@ -78,6 +78,8 @@ export interface UseInvoiceResult {
   addItem: () => void;
   removeItem: (id: string) => void;
   reset: () => void;
+  /** Replace the whole draft, e.g. with an invoice prepared by an AI assistant. */
+  replace: (next: InvoiceData) => void;
 }
 
 export function useInvoice(): UseInvoiceResult {
@@ -145,5 +147,6 @@ export function useInvoice(): UseInvoiceResult {
     addItem,
     removeItem,
     reset: remove,
+    replace: setValue,
   };
 }

@@ -25,6 +25,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowRight } from "lucide-react";
 import { getAllResources, type ResourceCategory } from "@/lib/utils/markdown";
+import AdPlacement from "@/components/ads/AdPlacement";
 
 const SITE = "https://freelanceshield.me";
 
@@ -157,6 +158,9 @@ export default function ResourcesPage() {
           );
         })}
       </main>
+
+      {/* One ad, after every guide listing — never above or between them. */}
+      <AdPlacement name="resourcesIndex" className="mt-14" />
     </div>
   );
 }

@@ -33,6 +33,9 @@ import {
 import { formatMoney, formatAmount, resolveCurrency } from "@/lib/utils/currency";
 import { lineTotal, REVERSE_CHARGE_NOTE } from "@/lib/utils/invoiceMath";
 import type { InvoiceData, InvoiceTotals } from "@/types/invoice";
+import { mascotSay } from "@/lib/mascot";
+import { saveInvoiceToLedger } from "@/lib/hooks/useLedger";
+import { markEngaged } from "@/components/ui/InstallPrompt";
 
 interface InvoicePreviewProps {
   data: InvoiceData;
@@ -61,7 +64,11 @@ export default function InvoicePreview({ data, totals, onReset }: InvoicePreview
     setStatus({ kind: "working", action: "download" });
     try {
       downloadInvoicePDF(data);
-      flash({ kind: "done", message: "PDF downloaded" });
+      // Every downloaded invoice is tracked until it is marked paid.
+      saveInvoiceToLedger(data);
+      markEngaged();
+      flash({ kind: "done", message: "PDF downloaded · tracking it on your dashboard" });
+      mascotSay("celebrate", "Invoice downloaded. Nice work!");
     } catch (error) {
       flash({
         kind: "error",
@@ -78,13 +85,17 @@ export default function InvoicePreview({ data, totals, onReset }: InvoicePreview
     try {
       const result = await shareInvoicePDF(data);
       if (result === "shared") {
-        flash({ kind: "done", message: "Invoice shared" });
+        saveInvoiceToLedger(data);
+        markEngaged();
+        flash({ kind: "done", message: "Invoice shared · tracking it on your dashboard" });
       } else if (result === "cancelled") {
         setStatus({ kind: "idle" });
       } else {
         // Be explicit rather than silently doing nothing: this browser cannot
         // attach files, so download and let the user attach it themselves.
         downloadInvoicePDF(data);
+        saveInvoiceToLedger(data);
+        markEngaged();
         flash({
           kind: "done",
           message: "This browser cannot share files, so the PDF was downloaded instead. Attach it to your email.",
@@ -150,7 +161,7 @@ export default function InvoicePreview({ data, totals, onReset }: InvoicePreview
               type="button"
               onClick={handleDownload}
               disabled={busy}
-              className="inline-flex items-center gap-2 rounded-xl bg-brand-600 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-brand-600/20 transition-colors hover:bg-brand-700 disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2"
+              className="inline-flex items-center gap-2 rounded-xl bg-brand-700 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-brand-600/20 transition-colors hover:bg-brand-800 disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2"
             >
               {busy && status.action === "download" ? (
                 <Loader2 size={15} aria-hidden="true" className="animate-spin motion-reduce:animate-none" />
@@ -180,7 +191,7 @@ export default function InvoicePreview({ data, totals, onReset }: InvoicePreview
       </div>
 
       {/* Paper */}
-      <div className="flex flex-grow justify-center overflow-y-auto p-4 sm:p-8">
+      <div className="flex grow justify-center overflow-y-auto p-4 sm:p-8">
         <article className="w-full max-w-[210mm] bg-white p-8 shadow-xl shadow-slate-300/40 sm:p-12">
           {/* Header */}
           <header className="mb-10 flex flex-wrap items-start justify-between gap-6">
@@ -193,15 +204,15 @@ export default function InvoicePreview({ data, totals, onReset }: InvoicePreview
               </p>
             </div>
             <dl className="text-right text-sm">
-              <dt className="text-[11px] font-bold uppercase tracking-wide text-slate-400">
+              <dt className="text-[11px] font-bold uppercase tracking-wide text-slate-500">
                 Issue date
               </dt>
               <dd className="mb-2 text-slate-700">{data.issueDate || "—"}</dd>
-              <dt className="text-[11px] font-bold uppercase tracking-wide text-slate-400">
+              <dt className="text-[11px] font-bold uppercase tracking-wide text-slate-500">
                 Due date
               </dt>
               <dd className="mb-2 text-slate-700">{data.dueDate || "—"}</dd>
-              <dt className="text-[11px] font-bold uppercase tracking-wide text-slate-400">
+              <dt className="text-[11px] font-bold uppercase tracking-wide text-slate-500">
                 Currency
               </dt>
               <dd className="text-slate-700">{currencyCode}</dd>
@@ -214,7 +225,7 @@ export default function InvoicePreview({ data, totals, onReset }: InvoicePreview
               const p = data[key];
               return (
                 <div key={key} className="min-w-0">
-                  <p className="mb-2 text-[11px] font-bold uppercase tracking-wide text-slate-400">
+                  <p className="mb-2 text-[11px] font-bold uppercase tracking-wide text-slate-500">
                     {key === "sender" ? "From" : "Bill to"}
                   </p>
                   <p className="font-bold text-slate-900">
@@ -350,7 +361,7 @@ export default function InvoicePreview({ data, totals, onReset }: InvoicePreview
 
           {data.paymentInstructions && (
             <section className="mb-6">
-              <h3 className="mb-1 text-[11px] font-bold uppercase tracking-wide text-slate-400">
+              <h3 className="mb-1 text-[11px] font-bold uppercase tracking-wide text-slate-500">
                 Payment details
               </h3>
               <p className="whitespace-pre-wrap break-words text-sm text-slate-700">
@@ -361,7 +372,7 @@ export default function InvoicePreview({ data, totals, onReset }: InvoicePreview
 
           {data.notes && (
             <section>
-              <h3 className="mb-1 text-[11px] font-bold uppercase tracking-wide text-slate-400">
+              <h3 className="mb-1 text-[11px] font-bold uppercase tracking-wide text-slate-500">
                 Notes
               </h3>
               <p className="whitespace-pre-wrap break-words text-sm text-slate-600">

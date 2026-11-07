@@ -49,16 +49,18 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import PrivacyDataControls from "@/components/core/PrivacyDataControls";
+import { CONTACT } from "@/lib/site";
 
 const SITE = "https://freelanceshield.me";
 
 /* -------------------------------------------------------------------------- */
-/* CONFIGURATION                                                              */
+/* PLACEHOLDERS — replace before deploying                                    */
 /* -------------------------------------------------------------------------- */
-const OPERATOR_LEGAL_NAME = "Kartikeya Mishra";
-const OPERATOR_ADDRESS = "Prayagraj, Uttar Pradesh, India";
-const PRIVACY_EMAIL = "workmailkartikeya@gmail.com";
-const LAST_UPDATED = "26 September 2026";
+// Operator details come from lib/site.ts so every legal page stays consistent.
+const OPERATOR_LEGAL_NAME = CONTACT.legalName;
+const OPERATOR_ADDRESS = CONTACT.address ?? `${CONTACT.city}, ${CONTACT.country}`;
+const PRIVACY_EMAIL = CONTACT.email;
+const LAST_UPDATED = "7 November 2026";
 
 export const metadata: Metadata = {
   title: "Privacy Policy | FreelanceShield",
@@ -330,6 +332,55 @@ export default function PrivacyPolicyPage() {
             by our hosting provider for their standard period. Email correspondence is
             deleted once the matter is closed. Advertising identifiers are governed by
             Google&apos;s own retention practices, linked in section 4.
+          </p>
+        </Section>
+
+        <Section id="assistant" heading="6b. The Shieldy guide">
+          <p>
+            Shieldy, the site guide, answers from pre-written answers inside your browser. It is not an AI model,
+            it makes no network requests, and nothing you type into it is sent or stored anywhere.
+          </p>
+        </Section>
+
+        <Section id="tracker" heading="6c. The payment dashboard">
+          <p>
+            When you download or share an invoice, a copy is added to the tracker on your dashboard so you can see what is
+            unpaid. Like the draft, it is kept only in this browser&apos;s local storage. Reminder buttons open your own email
+            or WhatsApp with a pre-written message, and you choose whether to send it. You can export, restore or delete the
+            tracker at any time from the dashboard or the controls on this page.
+          </p>
+        </Section>
+
+        <Section id="integrations" heading="6d. Extensions and AI assistant integrations">
+          <p>
+            <strong>Browser extension and Google Docs add-on.</strong> Both check contract text inside the extension or the
+            Docs sidebar. They read a page or document only when you run them, and they send nothing to us or anyone else.
+            The extension keeps selected text in session storage until the report opens, and the browser clears that when it
+            closes. The Docs add-on can read only the document it is opened in.
+          </p>
+          <p>
+            <strong>ChatGPT, Claude, Gemini and the public API.</strong> When you use FreelanceShield through an AI
+            assistant, the assistant sends the details needed for that request, such as invoice lines or contract text, to our
+            server at <code>/api/mcp</code> or <code>/api/v1</code>. We process the request in memory, return the result and
+            keep nothing. Request contents are not logged, stored or used for training. Our hosting provider records standard
+            request metadata, such as IP address, time and path, for security and rate limiting, as described in section 6.
+            What you share with the assistant itself is governed by that provider&apos;s privacy policy (OpenAI, Anthropic or
+            Google).
+          </p>
+          <p>
+            <strong>Invoice links.</strong> An invoice prepared by an assistant opens through a link that carries the details
+            after the <code>#</code> sign. Browsers do not send that part of a link to any server, so it goes straight from
+            the assistant to your browser.
+          </p>
+        </Section>
+
+        <Section id="payments" heading="6a. Payments (if and when paid products exist)">
+          <p>
+            Nothing is sold today. If paid products are offered, payments are handled by Razorpay (India) or PayPal
+            (international). They collect the payment details needed to process the transaction under their own privacy
+            policies. We receive only the payment ID, amount, status, and the name and email used at checkout, and keep those
+            records for as long as tax law requires (in India, generally at least eight years for accounting records). We
+            never receive or store card numbers, UPI PINs or bank credentials.
           </p>
         </Section>
 
