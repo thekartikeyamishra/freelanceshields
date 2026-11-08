@@ -1,19 +1,19 @@
-// app/.well-known/assetlinks.json/route.ts
+// app/.well-known/openai-apps-challenge/route.ts
 //
-// Digital Asset Links for the Play Store build (a Trusted Web Activity wrapping
-// this PWA — see integrations/android/README.md). Returns 404 until both env
-// vars are set, because a wrong fingerprint is worse than none.
-//   ANDROID_PACKAGE_NAME   e.g. com.kartikeyamishra.freelanceshield
-//   ANDROID_SHA256_CERT    the Play App Signing SHA-256 fingerprint(s), comma-separated
+// Domain verification for the ChatGPT app directory submission.
+// OpenAI's form gives you a token; set it in Vercel as OPENAI_APPS_CHALLENGE,
+// redeploy, then click "Verify" in the form. The response must be the token
+// ONLY: plain text, no HTML, no JSON, no trailing newline.
 
 export const dynamic = "force-dynamic";
 
 export function GET(): Response {
-  const pkg = process.env.ANDROID_PACKAGE_NAME?.trim();
-  const certs = (process.env.ANDROID_SHA256_CERT ?? "").split(",").map((s) => s.trim()).filter(Boolean);
-  if (!pkg || certs.length === 0) return new Response("Not configured", { status: 404 });
-  return Response.json(
-    [{ relation: ["delegate_permission/common.handle_all_urls"], target: { namespace: "android_app", package_name: pkg, sha256_cert_fingerprints: certs } }],
-    { headers: { "Cache-Control": "public, max-age=3600" } },
-  );
+  const token = (process.env.OPENAI_APPS_CHALLENGE ?? "").trim();
+  if (!token) return new Response("Not configured", { status: 404 });
+  return new Response(token, {
+    headers: {
+      "Content-Type": "text/plain; charset=utf-8",
+      "Cache-Control": "no-store",
+    },
+  });
 }
